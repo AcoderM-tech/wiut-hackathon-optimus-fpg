@@ -1,0 +1,35 @@
+{
+ "team": "7638B6E8",
+ "n_train": 14000,
+ "n_test": 6000,
+ "pos_rate": 0.1718,
+ "n_features": 853,
+ "families": {
+  "features_windows": 387,
+  "features_histograms": 148,
+  "features_relative": 317
+ },
+ "n_selected": 60,
+ "cv_all_features": 0.652,
+ "n_folds": 5,
+ "n_seeds": 10,
+ "blend_w_lgb": 0.7,
+ "n_estimators": 1500,
+ "lgb_params": {
+  "learning_rate": 0.005,
+  "num_leaves": 7,
+  "min_child_samples": 100,
+  "subsample": 0.7,
+  "subsample_freq": 1,
+  "colsample_bytree": 0.3,
+  "reg_lambda": 10,
+  "reg_alpha": 1
+ },
+ "lr_C": 0.01,
+ "burst_cutoff_minutes": 3.0,
+ "cv_lgb": 0.661,
+ "cv_lr": 0.647,
+ "cv_blend": 0.6602,
+ "submission": "outputs/team_7638B6E8.csv",
+ "finished": "2026-09-26 17:30:14"
+}

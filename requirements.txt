@@ -1,0 +1,12 @@
+pandas>=2.0
+pyarrow
+numpy
+scikit-learn
+lightgbm
+scipy
+matplotlib
+jupyter
+xgboost
+optuna
+catboost
+torch

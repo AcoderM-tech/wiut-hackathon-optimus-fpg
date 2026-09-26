@@ -1,0 +1,16 @@
+key,name,paper,auc,recall20,note
+ours,Bizning model: LightGBM top-60 + LogReg rank-blend,—,0.661,0.412,yakuniy submission
+jullum,"Jullum 2020 retsepti: XGBoost, tur bo'yicha max/total/count (24 feature)","Jullum et al. 2020, JMLC",0.6164,0.337,"DNB maqolasidagi feature oilasi: 'maximum and total amount, and the number of transactions of each transaction type'"
+jullum_full,Jullum 2020 modeli (XGBoost) bizning top-60 featurelarda,Jullum et al. 2020,0.6606,0.412,algoritm farqi LightGBM vs XGBoost
+asxaml,Bakry 2023 (ASXAML): XGBoost + RFE (40 feature) + Optuna (25 trial),"Bakry et al. 2023, J. Supercomputing",0.6599,0.404,"best params: {""n_estimators"": 765, ""lr"": 0.031061198090465193, ""max_depth"": 2, ""subsample"": 0.844614534911797, ""colsample"": 0.46033781662756723, ""lambda"": 1.0800398941501825, ""mcw"": 70}"
+feedzai,"Feedzai 2021 retsepti: LightGBM, oyna agregatlari + ikki oyna nisbat/farqlari (156 feature)","Eddin et al. 2021, arXiv:2112.07508",0.6274,0.35,graf featurelari yo'q (datasetda mijozlar orasida bog'lanish yo'q)
+iforest,"Isolation Forest anomaliya skori (nazoratsiz, label ishlatilmagan)","Oztas et al. 2024, FGCS (anomaly detection tavsiyasi)",0.4931,0.179,label'siz skor; eskalatsiya = anomaliya degan gipoteza
+autoenc,Autoencoder (60→32→8→32→60) rekonstruksiya xatosi,"Paula et al. 2016, ICMLA",0.4691,0.181,nazoratsiz; Braziliya eksport AML ishidagi g'oya
+pca,PCA (8 komponent) rekonstruksiya xatosi,klassik anomaliya usuli,0.4708,0.168,nazoratsiz
+lgb_anom,LightGBM top-60 + 3 ta anomaliya skori feature sifatida,gibrid: nazoratli + nazoratsiz,0.6612,0.418,anomaliya skorlari nazoratli modelga qo'shimcha beradimi?
+nb,Gaussian Naive Bayes,Bakry 2023 da taqqoslangan bazaviy model,0.6333,0.366,
+rf,Random Forest (500 daraxt),Chen et al. 2018 sharhi,0.6534,0.407,
+et,Extra Trees (500 daraxt),Chen et al. 2018 sharhi,0.6512,0.397,
+mlp,"MLP neyron tarmoq (128-64), standartlashtirilgan top-60",Chen et al. 2018 sharhi (NN),0.6095,0.328,
+svm,"SVM (RBF), standartlashtirilgan top-60",Chen et al. 2018 sharhi (SVM),0.5579,0.25,14k namunada ~10 daqiqa
+stack,Stacking: 8 ta modelning OOF skorlari → logistik meta-model,klassik ensemble,0.6592,0.412,ikki darajali CV (OOF ustida)

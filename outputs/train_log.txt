@@ -1,0 +1,16 @@
+$ python src/train.py --team 7638B6E8
+[17:25:09] train (14000, 3), test (6000, 2), escalation rate 0.1718
+[17:25:09] building train features
+[17:25:27]   features_windows        387 features  (18s)
+[17:25:40]   features_histograms     149 features  (13s)
+[17:28:18]   features_relative       317 features  (158s)
+[17:28:18] building test features
+[17:28:27]   features_windows        387 features  (9s)
+[17:28:32]   features_histograms     148 features  (5s)
+[17:29:25]   features_relative       317 features  (53s)
+[17:29:25] feature matrix (14000, 853)
+[17:29:49] all-feature LightGBM CV AUC = 0.6520
+[17:29:49] top-10 features: grp_bank_otkazmasi_chiqim_minus_karta_chiqim_q75, grp_bank_otkazmasi_chiqim_minus_naqd_kirim_q75, all_amt_min, type_bank_otkazmasi_minus_naqd_q75, grp_bank_otkazmasi_kirim_minus_naqd_kirim_q75, grp_bank_otkazmasi_chiqim_minus_naqd_kirim_mean, grp_bank_otkazmasi_kirim_minus_naqd_kirim_mean, grp_bank_otkazmasi_chiqim_minus_karta_chiqim_mean, type_bank_otkazmasi_minus_karta_std, grp_bank_otkazmasi_kirim_minus_karta_chiqim_std
+[17:29:58] CV AUC  LightGBM=0.6610  LogReg=0.6470  blend=0.6602
+[17:29:58] fitting final models on all training data
+[17:30:14] wrote outputs/team_7638B6E8.csv  (6000 rows)

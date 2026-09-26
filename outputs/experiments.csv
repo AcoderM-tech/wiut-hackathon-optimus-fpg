@@ -1,0 +1,22 @@
+key,Yondashuv,CV ROC-AUC,Xulosa
+agg,1. Agregatlar (oynalar) + LightGBM,0.6271,bazaviy nuqta
+agg_hist,2. + gistogramma/kvantil featurelari,0.6297,bazaviyga nisbatan +0.003
+all853,3. + nisbiy tur/yo'nalish farqlari (853 feature),0.652,oldingi qadamga nisbatan +0.022
+lr853,4. Logistik regressiya (853 feature),0.6198,LightGBM (3-qadam) bilan farq -0.032
+top30,5. Top-30 feature + LightGBM (1500 daraxt),0.6567,shovqinli featurelarni olib tashlash
+top60,5. Top-60 feature + LightGBM (1500 daraxt),0.6618,shovqinli featurelarni olib tashlash
+top120,5. Top-120 feature + LightGBM (1500 daraxt),0.6604,shovqinli featurelarni olib tashlash
+lr60,6a. Logistik regressiya (top-60),0.6476,
+blend5,6b. Blend LightGBM 0.5 / LogReg 0.5,0.6588,
+blend7,6b. Blend LightGBM 0.7 / LogReg 0.3,0.661,yakuniy retsept
+blend9,6b. Blend LightGBM 0.9 / LogReg 0.1,0.6619,
+catboost,7. CatBoost (853 feature),0.6469,LightGBM (3-qadam) bilan farq -0.005
+mil,8. Tranzaksiya darajasidagi model (MIL),0.5543,"har tranzaksiyaga alert label'i, alert bo'yicha o'rtacha"
+gru,"9. bi-GRU + attention (jamoaning dastlabki tajribasi, 80/20 split)",0.6264,"eng yaxshi 19-epochda; oxirgi epoch valid AUC 0.586, train loss 0.157"
+hp_numleaves4,"10. LightGBM top-60, num_leaves=4",0.6594,asosiy parametrlarga nisbatan -0.0024
+hp_numleaves15,"10. LightGBM top-60, num_leaves=15",0.6597,asosiy parametrlarga nisbatan -0.0021
+hp_extratrees,"10. LightGBM top-60, extra_trees",0.6548,asosiy parametrlarga nisbatan -0.0070
+hp_minchildsamples300,"10. LightGBM top-60, min_child_samples=300",0.6615,asosiy parametrlarga nisbatan -0.0003
+hp_colsample05,"10. LightGBM top-60, colsample=0.5",0.6611,asosiy parametrlarga nisbatan -0.0007
+hp_maxdepth3,"10. LightGBM top-60, max_depth=3",0.6604,asosiy parametrlarga nisbatan -0.0014
+floor,11. Top-60 + floor/ceiling featurelari,0.6627,top-60 ga nisbatan +0.0009

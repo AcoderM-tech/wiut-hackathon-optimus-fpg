@@ -1,0 +1,5 @@
+5-fold stratified CV, 60 selected features
+all-feature LightGBM (early stopping): 0.6520
+LightGBM top-60:                0.6610
+LogReg top-60:                  0.6470
+rank blend (0.7/0.3):                 0.6602

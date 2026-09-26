@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OPTIMUS FPG — Signal ostida</title>
+<meta name="description" content="OPTIMUS FPG · Fintech track — 7 million tranzaksiya ichidan alert eskalatsiyasini ajratadigan yagona naqsh: EDA, 23 ta tajriba, adabiyot bilan taqqoslash.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+<script>if(!window.Plotly){document.write('<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"><\/script>')}</script>
+<script src="data.js"></script>
+<style>
+:root{
+  --bg:#ffffff; --bg2:#f4f4f9; --surf:#f6f6fb; --surf2:#e9e9f2; --line:#cfcfdd; --line2:#9d9db3;
+  --text:#0b0b12; --text2:#1f1f2b; --muted:#454556; --dim:#6a6a7c;
+  --fire:#3730c8; --fire2:#5b55e6; --gold:#b8860b; --rose:#d1355f; --plum:#8a5cff; --moss:#2e8b57;
+  --disp:'Bricolage Grotesque',system-ui,sans-serif; --body:'Instrument Sans',system-ui,-apple-system,"Segoe UI",sans-serif; --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.6;font-weight:500;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+a{color:var(--text);text-decoration:none;border-bottom:1px solid var(--line2)}
+a:hover{border-bottom-color:var(--fire)}
+a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--fire);outline-offset:3px}
+h1,h2,h3{font-family:var(--disp);text-wrap:balance;line-height:1.02;margin:0;letter-spacing:-0.02em;color:#14141c}
+h1{font-size:clamp(44px,7.6vw,108px);font-weight:800;font-variation-settings:"opsz" 96}
+h2{font-size:clamp(32px,4.4vw,60px);font-weight:800;font-variation-settings:"opsz" 72}
+h3{font-size:clamp(20px,2.2vw,26px);font-weight:700;margin-block:28px 12px}
+p{margin:0 0 16px;max-width:62ch}
+strong,b{font-weight:700;color:#14141c}
+code{font-family:var(--mono);font-size:.86em;background:var(--surf2);border:1px solid var(--line);padding:1px 6px;color:var(--text)}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(18px,4vw,44px);position:relative;z-index:1}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--fire)}
+.eyebrow::before{content:"";width:28px;height:2px;background:var(--fire)}
+.ch{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--fire);letter-spacing:.14em}
+
+/* nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:60;padding-top:env(safe-area-inset-top,0px);transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.nav.solid{background:rgba(255,255,255,.86);backdrop-filter:blur(16px);border-bottom-color:var(--line)}
+.nav .in{display:flex;align-items:center;gap:18px;height:64px}
+.brand{font-family:var(--disp);font-weight:800;font-size:18px;letter-spacing:.06em;border:0;color:#14141c;white-space:nowrap;display:flex;align-items:center;gap:10px}
+.brand i{width:10px;height:10px;background:var(--fire);box-shadow:0 0 18px var(--fire);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.7);opacity:.6}}
+.links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
+.links::-webkit-scrollbar{display:none}
+.links a{border:0;color:var(--text);font-size:13.5px;font-weight:600;padding:7px 11px;white-space:nowrap;font-weight:500;transition:color .2s,background .2s}
+.links a:hover,.links a.on{color:#14141c;background:rgba(55,48,200,.10)}
+.gh{border:1.5px solid var(--text);padding:7px 14px;font-family:var(--mono);font-size:12.5px;color:#14141c;white-space:nowrap;transition:border-color .2s,background .2s}
+.gh:hover{border-color:var(--fire);background:rgba(55,48,200,.06)}
+.prog{position:absolute;left:0;bottom:-1px;height:2px;background:var(--fire);width:0}
+
+/* hero */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;overflow:hidden;isolation:isolate}
+.aurora{position:absolute;inset:-20%;z-index:-2;filter:blur(80px);opacity:.5}
+.aurora span{position:absolute;border-radius:50%;mix-blend-mode:multiply}
+.aurora .a1{width:56vw;height:56vw;left:-10vw;top:-10vw;background:radial-gradient(circle,#c9c6ff 0%,rgba(201,198,255,0) 60%);animation:drift1 18s ease-in-out infinite alternate}
+.aurora .a2{width:50vw;height:50vw;right:-8vw;top:10vh;background:radial-gradient(circle,#dcecff 0%,rgba(220,236,255,0) 60%);animation:drift2 22s ease-in-out infinite alternate}
+.aurora .a3{width:44vw;height:44vw;left:30vw;bottom:-20vh;background:radial-gradient(circle,#ffd9e4 0%,rgba(255,217,228,0) 60%);animation:drift3 26s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate(12vw,10vh) scale(1.15)}}
+@keyframes drift2{to{transform:translate(-14vw,14vh) scale(.9)}}
+@keyframes drift3{to{transform:translate(-10vw,-12vh) scale(1.2)}}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;opacity:.55}
+.hero .in{padding-block:120px 80px;width:100%}
+.hero h1 .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.08em;margin-right:.24em}
+.hero h1 .w span{display:inline-block;transform:translateY(110%);animation:up .9s cubic-bezier(.2,.8,.2,1) forwards}
+.hero h1 .fire{background:linear-gradient(92deg,#3730c8,#7c5cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes up{to{transform:translateY(0)}}
+.lead{font-size:clamp(18px,1.7vw,23px);color:var(--text2);max-width:56ch;margin-top:28px;opacity:0;animation:fade 1s .9s forwards}
+@keyframes fade{to{opacity:1}}
+.hero .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px;opacity:0;animation:fade 1s 1.1s forwards}
+.chip{font-family:var(--mono);font-size:12px;font-weight:600;padding:6px 12px;border:1px solid var(--line2);color:var(--text);background:#fff}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);margin-top:56px;opacity:0;animation:fade 1s 1.3s forwards}
+.stat{background:#fff;padding:24px 22px 20px;position:relative}
+.stat .v{font-family:var(--disp);font-size:clamp(30px,3.4vw,44px);font-weight:800;letter-spacing:-.03em;color:#14141c;font-variant-numeric:tabular-nums}
+.stat.hot .v{color:var(--fire)}
+.stat .l{font-size:13px;font-weight:600;color:var(--muted);margin-top:4px}
+.cue{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:8px}
+.cue i{width:1px;height:42px;background:linear-gradient(180deg,var(--fire),transparent);animation:cue 1.8s ease-in-out infinite}
+@keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* sections */
+section{padding-block:clamp(72px,9vw,120px);position:relative}
+section+section{border-top:1px solid var(--line)}
+section:nth-of-type(even){background:var(--bg2)}
+.head{display:grid;grid-template-columns:64px 1fr;gap:12px 24px;align-items:start;margin-bottom:38px}
+.head .ch{padding-top:14px}
+.head p.sub{grid-column:2;color:var(--text2);font-size:clamp(17px,1.4vw,19px);max-width:62ch;margin-top:14px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line2);border:1px solid var(--line2)}
+.card{background:#fff;padding:26px;position:relative;transition:background .3s,box-shadow .3s}
+.card:hover{background:var(--surf);box-shadow:inset 0 -3px 0 var(--fire)}
+.card h4{font-family:var(--disp);font-size:19px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em;color:#14141c}
+.card p{font-size:15.5px;color:var(--text2);margin:0}
+.card .ix{display:block;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--fire);letter-spacing:.12em;margin-bottom:10px}
+.chart{background:#fff;border:1px solid var(--line2);padding:10px 10px 16px;margin:18px 0 8px;min-height:360px}
+.chart.tall{min-height:480px}
+.cap{font-size:14.5px;color:var(--text2);margin:8px 4px 24px;max-width:76ch;line-height:1.55}
+.cap b{color:#14141c}
+.call{border:1px solid var(--line2);border-left:5px solid var(--fire);background:#fff;padding:22px 26px;margin:26px 0}
+.call p{margin:0;font-size:17.5px;max-width:none;color:#14141c}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:12px 22px;font-size:15.5px;margin:10px 0 0}
+.kv dt{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--fire);padding-top:4px;white-space:nowrap;letter-spacing:.04em}
+.kv dd{margin:0;color:var(--text)}
+.tbl{overflow-x:auto;margin:16px 0 8px;border:1px solid var(--line2)}
+table{border-collapse:collapse;width:100%;font-size:15px;min-width:560px;background:#fff}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--text2)}
+tr:last-child td{border-bottom:0}
+th{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);font-weight:700;background:var(--surf2)}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:#14141c}
+
+/* horizontal scroll-driven strip */
+.hwrap{position:relative}
+.hsticky{position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.hhead{margin-bottom:26px}
+.track{display:flex;gap:1px;background:var(--line2);border:1px solid var(--line2);width:max-content;will-change:transform}
+.track .card{width:min(420px,80vw);flex:none;min-height:250px;display:flex;flex-direction:column}
+.track .card p{flex:1}
+.res{margin-top:16px;font-family:var(--mono);font-size:12.5px;font-weight:700;display:inline-block;padding:5px 10px;border:1.5px solid var(--text2);color:var(--text);align-self:flex-start}
+.res.bad{color:var(--rose);border-color:var(--rose)} .res.ok{color:var(--moss);border-color:var(--moss)} .res.hot{color:var(--fire);border-color:var(--fire)}
+.hbar{height:3px;background:var(--line);margin-top:26px;position:relative;max-width:1240px}
+.hbar i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--fire)}
+
+/* scrollytelling */
+.scrolly{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:40px;align-items:start}
+.steps .step{min-height:70vh;display:flex;flex-direction:column;justify-content:center;padding:20px 0;opacity:.35;transition:opacity .5s}
+.steps .step.on{opacity:1}
+.steps .step h3{margin-top:6px}
+.steps .step .k{font-family:var(--mono);font-size:12px;color:var(--fire);letter-spacing:.14em}
+.steps .step .auc{font-family:var(--disp);font-size:clamp(30px,3.4vw,44px);font-weight:800;letter-spacing:-.03em;color:#14141c;margin-bottom:8px}
+.steps .step p{color:var(--text2)}
+.sticky{position:sticky;top:90px}
+.sticky .chart{margin-top:0}
+.stack{position:relative;min-height:420px}
+.stack .chart{position:absolute;inset:0;margin:0;opacity:0;transition:opacity .5s;pointer-events:none}
+.stack .chart.on{opacity:1;pointer-events:auto}
+.sel{background:#fff;color:var(--text);border:1.5px solid var(--line2);font-weight:600;padding:9px 12px;font:inherit;font-size:14px;width:100%}
+
+/* quotes (scroll-driven too) */
+.track .q{width:min(560px,86vw);flex:none;background:#fff;padding:28px;display:grid;gap:14px;align-content:start;min-height:360px}
+.q .src{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--fire);letter-spacing:.06em;line-height:1.5}
+.q blockquote{margin:0;font-family:var(--disp);font-weight:500;font-size:clamp(16px,1.4vw,19px);line-height:1.4;color:#14141c;letter-spacing:-.01em}
+.q blockquote::before{content:"“";color:var(--fire);font-size:1.6em;line-height:0;margin-right:4px}
+.q .uz{font-size:14.5px;color:var(--text2);font-weight:500}
+.q .rs{display:grid;gap:6px;font-size:14px;color:var(--text2);border-top:1px solid var(--line);padding-top:14px}
+.q .rs b{font-family:var(--mono);color:var(--fire)}
+
+/* leaderboard */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 18px}
+.chips button{font:inherit;font-size:13.5px;font-weight:700;padding:8px 14px;border:1.5px solid var(--line2);background:#fff;color:var(--text);cursor:pointer;transition:all .2s}
+.chips button.on,.chips button:hover{background:var(--fire);color:#fff;border-color:var(--fire)}
+.lb{display:grid;gap:1px;background:var(--line2);border:1px solid var(--line2)}
+.lb .row{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:14px;align-items:center;padding:12px 16px;background:#fff;transition:background .3s;animation:rowin .6s cubic-bezier(.2,.8,.2,1) both}
+.lb .row:hover{background:var(--surf)}
+@keyframes rowin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.lb .name{display:flex;flex-direction:column;gap:6px;min-width:0}
+.lb .name .t{font-size:14.5px;font-weight:600;display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:#14141c}
+.lb .name .t .cat{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border:1.5px solid currentColor}
+.lb .name .s{font-size:13px;color:var(--muted);font-weight:500}
+.lb .bar{height:7px;background:var(--surf2);overflow:hidden;position:relative}
+.lb .bar i{position:absolute;left:0;top:0;bottom:0;width:0;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.lb .bar u{position:absolute;left:33.3%;top:-2px;bottom:-2px;width:1px;background:var(--line2)}
+.lb .v{font-family:var(--disp);font-size:24px;font-weight:800;text-align:right;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#14141c}
+.lb .row.top{background:rgba(55,48,200,.05)}
+
+/* pipeline */
+.pipe{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--line2);border:1px solid var(--line2);margin:20px 0}
+.pipe .st{background:#fff;padding:18px 16px 14px;position:relative}
+.pipe .st .k{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--fire);letter-spacing:.12em}
+.pipe .st .t{font-family:var(--disp);font-weight:700;margin:6px 0 6px;font-size:17px;color:#14141c}
+.pipe .st .d{font-size:13.5px;color:var(--text2);line-height:1.5}
+.pipe .st .v{font-family:var(--disp);font-size:30px;font-weight:800;color:#14141c;margin-top:8px;letter-spacing:-.02em}
+.pipe .st.hot .v{color:var(--fire)}
+
+/* terminal + notebook proof */
+.term{font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#d9d2c6;background:#0a0807;border:1px solid var(--line2);padding:0;overflow:hidden}
+.term .bar{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--line);background:#14100e;font-size:11.5px;color:var(--muted)}
+.term .bar i{width:10px;height:10px;border-radius:50%;background:#3a2f27}
+.term .bar i:first-child{background:#ff6b6b}.term .bar i:nth-child(2){background:#ffd36b}.term .bar i:nth-child(3){background:#9ccf6e}
+.term pre{margin:0;padding:14px 16px;white-space:pre;overflow:auto;max-height:440px}
+.term .ok{color:var(--moss)} .term .hi{color:var(--fire)} .term .g{color:var(--dim)}
+.shots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+.shot{background:#fff;border:1px solid var(--line2);padding:6px;box-shadow:0 1px 0 var(--line)}
+.shot img{display:block;width:100%;height:auto}
+.shot .c{font-family:var(--mono);font-size:11.5px;color:#4a4038;padding:8px 6px 4px;background:#fff}
+.tree{font-family:var(--mono);font-size:13.5px;line-height:1.75;color:var(--text);background:#fff;border:1px solid var(--line2);padding:18px 22px;overflow-x:auto;white-space:pre;margin-top:22px}
+.tree b{color:var(--fire);font-weight:500}
+ul.l{padding-left:22px;margin:0 0 16px}
+ul.l li{margin-bottom:10px;max-width:68ch;color:var(--text2)}
+footer{padding-block:40px 64px;font-family:var(--mono);font-size:13px;color:var(--dim);border-top:1px solid var(--line)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 30px;justify-content:space-between}
+
+/* reveal */
+.rv{opacity:1;transform:none;filter:none;transition:opacity .8s cubic-bezier(.2,.8,.2,1),transform .8s cubic-bezier(.2,.8,.2,1),filter .8s}
+.rv.pre{opacity:0;transform:translateY(26px);filter:blur(6px)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}.rv.pre{opacity:1;transform:none;filter:none}.hero h1 .w span{transform:none}.lead,.hero .meta,.stats{opacity:1}}
+@media (max-width:960px){
+  .stats{grid-template-columns:1fr 1fr}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .head{grid-template-columns:1fr}.head p.sub{grid-column:1}
+  .scrolly{grid-template-columns:1fr}
+  .sticky{position:sticky;top:70px;z-index:2;background:var(--bg)}
+  .steps .step{min-height:auto;padding:28px 0}
+  .kv{grid-template-columns:1fr}
+  .hwrap{height:auto!important}.hsticky{position:static;height:auto;overflow-x:auto;display:block;padding-bottom:10px}
+  .track{transform:none!important}.hbar{display:none}
+  .lb .row{grid-template-columns:minmax(0,1fr) 70px}.lb .v{font-size:20px}
+  .shots{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="nav" id="nav"><div class="wrap in">
+  <a class="brand" href="#top"><i></i>OPTIMUS FPG</a>
+  <div class="links" id="links">
+    <a href="#masala">Masala</a><a href="#dataset">Dataset</a><a href="#target">Target</a><a href="#eda">EDA</a>
+    <a href="#topilma">Topilma</a><a href="#artefakt">Artefaktlar</a><a href="#feature">Featurelar</a>
+    <a href="#adabiyot">Adabiyot</a><a href="#tajriba">Tajribalar</a><a href="#model">Model</a><a href="#isbot">Loglar</a>
+  </div>
+  <a class="gh" id="gh" href="#" target="_blank" rel="noopener">GitHub ↗</a>
+  <div class="prog" id="prog"></div>
+</div></div>
+
+<header class="hero" id="top">
+  <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+  <canvas id="bg"></canvas>
+  <div class="wrap in">
+    <div class="eyebrow">OPTIMUS FPG · Fintech track · EDA hisoboti</div>
+    <h1 style="margin-top:22px" id="h1"></h1>
+    <p class="lead">Qaysi alert tekshiruvga yuboriladi? <span data-v="n_exp"></span> yondashuv, <span data-v="n_papers"></span> maqola retsepti, bitta javob: mijozning o'z tranzaksiya turlari orasidagi <b>nisbat</b>.</p>
+    <div class="meta">
+      <span class="chip">ROC-AUC</span><span class="chip"><span data-v="n_train"></span> train · <span data-v="n_test"></span> test</span>
+      <span class="chip"><span data-v="n_features"></span> → <span data-v="n_selected"></span> feature</span><span class="chip"><span data-v="n_exp"></span> tajriba · <span data-v="n_papers"></span> maqola</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="v cnt" data-src="n_tx_train" data-fmt="M">0</div><div class="l">train tranzaksiyalar</div></div>
+      <div class="stat"><div class="v cnt" data-src="n_train" data-fmt="k">0</div><div class="l">alertlar (train)</div></div>
+      <div class="stat"><div class="v cnt" data-src="pos_pct" data-fmt="pct">0</div><div class="l">eskalatsiya darajasi</div></div>
+      <div class="stat hot"><div class="v cnt" data-src="cv_blend" data-fmt="auc">0</div><div class="l">CV ROC-AUC · <span data-v="n_folds"></span>-fold</div></div>
+    </div>
+  </div>
+  <div class="cue"><span>PASTGA</span><i></i></div>
+</header>
+
+<section id="masala"><div class="wrap">
+  <div class="head"><span class="ch">01</span><h2>Masala</h2>
+    <p class="sub"><span data-v="window_days"></span> kunlik tranzaksiya tarixi → eskalatsiya ehtimoli. Metrika ROC-AUC.</p></div>
+  <div class="grid3">
+    <div class="card"><span class="ix">KIRISH</span><h4>~<span data-v="tx_mean"></span> tranzaksiya / alert</h4><p>vaqt · kirim/chiqim · <span data-v="n_types"></span> tur · hajm indeksi</p></div>
+    <div class="card"><span class="ix">CHIQISH</span><h4>Ehtimol, 0…1</h4><p>xavfli alertlar ro'yxat boshida</p></div>
+    <div class="card"><span class="ix">QIYINLIK</span><h4>Sinflar deyarli bir xil</h4><p>eng kuchli bitta feature: AUC <span data-v="best_single"></span></p></div>
+  </div>
+</div></section>
+
+<section id="dataset"><div class="wrap">
+  <div class="head"><span class="ch">02</span><h2>Dataset</h2></div>
+  <div class="grid2">
+    <div>
+      <dl class="kv">
+        <dt>train_signals</dt><dd><b data-v="n_train"></b> alert · <span data-v="date_min"></span> → <span data-v="date_max"></span> · target <code>eskalatsiya</code></dd>
+        <dt>train_transactions</dt><dd><b data-v="n_tx_train_full"></b> qator · <span data-v="n_types"></span> tur × <span data-v="n_dirs"></span> yo'nalish</dd>
+        <dt>test</dt><dd><b data-v="n_test"></b> alert · <span data-v="n_tx_test"></span> tranzaksiya · target yo'q</dd>
+        <dt>miqdor_indeksi</dt><dd><span data-v="amt_min"></span> … <span data-v="amt_max"></span>, standartlashtirilgan</dd>
+        <dt>oyna</dt><dd>signaldan oldingi <b data-v="window_days"></b> kun</dd>
+      </dl>
+    </div>
+    <div>
+      <div class="chart" id="c_txps" style="min-height:320px"></div>
+      <div class="cap">O'rtacha <b data-v="tx_mean"></b> tranzaksiya / alert (<span data-v="tx_min"></span> … <span data-v="tx_max"></span>). Soni: AUC <span data-v="auc_n"></span>.</div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div><div class="chart" id="c_types" style="min-height:340px"></div>
+      <div class="cap" data-v="types_cap"></div></div>
+    <div><div class="chart" id="c_type_esc" style="min-height:340px"></div>
+      <div class="cap">Har tur uchun <b data-v="type_esc_range"></b>: tur aralashmasi ajratmaydi.</div></div>
+  </div>
+</div></section>
+
+<section id="target"><div class="wrap">
+  <div class="head"><span class="ch">03</span><h2>Target: <span data-v="pos_pct_s"></span>, vaqt bo'yicha tekis</h2>
+    <p class="sub">Oylik <span data-v="month_range"></span>: shovqin. Sana ma'lumot bermaydi.</p></div>
+  <div class="chart" id="c_month"></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Signal bo'yicha o'rtacha</th><th>Rad etilgan</th><th>Eskalatsiya</th><th>Farq</th></tr></thead>
+    <tbody id="t_classmeans"></tbody>
+  </table></div>
+</div></section>
+
+<section id="eda" style="padding-block:0"><div class="hwrap" id="hw1"><div class="hsticky"><div class="wrap">
+  <div class="head hhead" style="margin-bottom:22px"><span class="ch">04</span><h2><span data-v="n_hyp"></span> gipoteza, <span data-v="n_hyp_ok"></span> tasdiq</h2>
+    <p class="sub">Klassik AML belgilari tekshirildi. Pastga siljing.</p></div>
+  <div class="track" id="tr1"></div>
+  <div class="hbar"><i id="hb1"></i></div>
+</div></div></div></section>
+
+<section id="eda2"><div class="wrap">
+  <div class="head"><span class="ch">04</span><h2>4 grafik</h2></div>
+  <div class="scrolly">
+    <div class="steps" id="steps2">
+      <div class="step on" data-c="c_amount"><span class="k">1 / 4</span><h3>Hajm taqsimoti</h3><p>Zichliklar ustma-ust. Farq <b>shaklda</b>: gistogramma featurelari <span data-v="hist_gain"></span> AUC.</p></div>
+      <div class="step" data-c="c_typeamt"><span class="k">2 / 4</span><h3>Tur × sinf</h3><p>Farq faqat <b>bank o'tkazmalarida</b>: <span data-v="bank_amt_pair"></span>.</p></div>
+      <div class="step" data-c="c_activity"><span class="k">3 / 4</span><h3>Signaldan oldingi faollik</h3><p><span data-v="act_pair"></span> / kun. Ikkala sinfda bir xil: AUC <span data-v="h2_range"></span>.</p></div>
+      <div class="step" data-c="c_heat"><span class="k">4 / 4</span><h3>Hafta kuni × soat</h3><p>Har katakda 1.0 ± <span data-v="heat_dev"></span>. Tungi faollik: signal yo'q.</p></div>
+    </div>
+    <div class="sticky"><div class="stack" id="stack2">
+      <div class="chart on" id="c_amount"></div><div class="chart" id="c_typeamt"></div><div class="chart" id="c_activity"></div><div class="chart" id="c_heat"></div>
+    </div></div>
+  </div>
+</div></section>
+
+<section id="topilma"><div class="wrap">
+  <div class="head"><span class="ch">05</span><h2>Asosiy topilma</h2>
+    <p class="sub">10 teng guruh, har birining haqiqiy eskalatsiya darajasi.</p></div>
+  <div class="scrolly">
+    <div class="steps" id="steps">
+      <div class="step on" data-f="type_bank_otkazmasi_minus_naqd_mean"><span class="k">1 / 5</span><h3>Bank − naqd, o'rtacha hajm</h3><div class="auc" data-a></div><p data-t="first_last"></p></div>
+      <div class="step" data-f="grp_bank_otkazmasi_chiqim_minus_karta_chiqim_q75"><span class="k">2 / 5</span><h3>Bank chiqim − karta chiqim, q75</h3><div class="auc" data-a></div><p data-t="first_last"></p></div>
+      <div class="step" data-f="all_amt_min"><span class="k">3 / 5</span><h3>Minimal hajm</h3><div class="auc" data-a></div><p>Chegarada <b data-v="floor_at"></b>, sal yuqorida <b data-v="floor_above"></b>. Nomonoton.</p></div>
+      <div class="step" data-f="nb_n"><span class="k">4 / 5</span><h3>Tranzaksiyalar soni</h3><div class="auc" data-a></div><p data-t="first_last"></p></div>
+      <div class="step" data-f="nb_night_frac"><span class="k">5 / 5</span><h3>Tungi ulush</h3><div class="auc" data-a></div><p data-t="spread"></p></div>
+    </div>
+    <div class="sticky">
+      <div class="chart" id="c_decile"></div>
+      <div class="cap" id="cap_decile"></div>
+      <div style="margin:0 4px"><select id="sel_feat" class="sel" aria-label="Boshqa feature"></select></div>
+    </div>
+  </div>
+  <div class="call"><p><span data-v="n_rel"></span> nisbiy feature. Top-10 ning <span data-v="top10_rel"></span> tasi shu oiladan.</p></div>
+</div></section>
+
+<section id="artefakt"><div class="wrap">
+  <div class="head"><span class="ch">06</span><h2>Ikki artefakt</h2></div>
+  <div class="grid2">
+    <div><div class="chart" id="c_burst"></div>
+      <div class="cap"><b>Burst:</b> qatorlarning <b data-v="burst_share"></b> i oxirgi <span data-v="burst_min"></span> daqiqada, alertga ~<span data-v="burst_n"></span> ta. Signaldan keyingi tranzaksiyalar siqilgan. Featurelar ularsiz.</div></div>
+    <div><div class="chart" id="c_floor"></div>
+      <div class="cap"><b>Chegaralar:</b> har tur × yo'nalish alohida standartlashtirilgan. Chegarada (<span data-v="floor_val"></span>) <b data-v="floor_at"></b>, sal yuqorida <b data-v="floor_above"></b>.</div></div>
+  </div>
+</div></section>
+
+<section id="feature"><div class="wrap">
+  <div class="head"><span class="ch">07</span><h2>EDA → featurelar</h2></div>
+  <div class="pipe">
+    <div class="st"><div class="k">OILA 1</div><div class="t">Vaqt oynalari</div><div class="d">1 / 7 / 30 / 90 kun va butun tarix; count, mean, std, min, max, kvantillar; burst alohida</div><div class="v" data-v="fam_win"></div></div>
+    <div class="st"><div class="k">OILA 2</div><div class="t">Taqsimot shakli</div><div class="d">bin ulushlari, kvantillar, tur va yo'nalish bo'yicha</div><div class="v" data-v="fam_hist"></div></div>
+    <div class="st hot"><div class="k">OILA 3</div><div class="t">Nisbiy farqlar</div><div class="d">tur / yo'nalish statistikalarining juft farqlari</div><div class="v" data-v="fam_rel"></div></div>
+    <div class="st"><div class="k">TANLASH</div><div class="t"><span data-v="n_features"></span> → <span data-v="n_selected"></span></div><div class="d">LightGBM gain; CV <span data-v="cv_all"></span> → <span data-v="cv_lgb"></span></div><div class="v" data-v="n_selected"></div></div>
+  </div>
+  <div class="chart tall" id="c_imp"></div>
+  <div class="cap">Top-20: <b>bank − naqd/karta</b> farqlari va <code>all_amt_min</code>.</div>
+</div></section>
+
+<section id="adabiyot" style="padding-block:0"><div class="hwrap" id="hw2"><div class="hsticky"><div class="wrap">
+  <div class="head hhead" style="margin-bottom:22px"><span class="ch">08</span><h2>Adabiyot: retseptlar sinovda</h2>
+    <p class="sub">Har retsept shu datasetda, bir xil <span data-v="n_folds"></span>-fold CV. Iqtiboslar asl nusxada.</p></div>
+  <div class="track" id="tr2">
+    <div class="q">
+      <div class="src">JULLUM · LØLAND · HUSEBY · ÅNONSEN · LORENTZEN — J. Money Laundering Control 23(1), 2020 · DNB, Norvegiya</div>
+      <blockquote>To fit the model, we use the machine learning library XGBoost. … the maximum and total amount, and the number of transactions of each of almost 30 different transaction types.</blockquote>
+      <div class="uz">DNB real datasi, XGBoost, tur bo'yicha max / total / count.</div>
+      <div class="rs"><span>Biz: shu retsept + XGBoost → <b data-p="jullum"></b></span><span>XGBoost bizning top-<span data-v="n_selected"></span> da → <b data-p="jullum_full"></b></span></div>
+    </div>
+    <div class="q">
+      <div class="src">EDDIN · BONO · APARÍCIO · POLIDO · ASCENSÃO · BIZARRO · RIBEIRO (Feedzai) — arXiv:2112.07508, 2021</div>
+      <blockquote>The top-performing model was a LightGBM … The aggregation functions include sum, mean, minimum, maximum, and count. We also compare aggregations over two time windows using ratios and differences.</blockquote>
+      <div class="uz">LightGBM, oyna agregatlari, ikki oyna nisbat/farqlari; metrika recall@20%FPR.</div>
+      <div class="rs"><span>Biz: ularning retsepti + LightGBM → <b data-p="feedzai"></b></span><span>Bizning model, recall@20%FPR → <b data-v="recall20"></b></span></div>
+    </div>
+    <div class="q">
+      <div class="src">BAKRY · ALSHARKAWY · FARAG · RASLAN — The Journal of Supercomputing, 2023 · ASXAML</div>
+      <blockquote>…leverages recursive feature elimination with cross-validation for optimal feature selection. Subsequently, Optuna is employed to fine-tune hyperparameters for the XGBoost model.</blockquote>
+      <div class="uz">XGBoost + RFE + Optuna.</div>
+      <div class="rs"><span>Biz: RFE + Optuna + XGBoost → <b data-p="asxaml"></b></span><span>Naive Bayes (ularning bazasi) → <b data-p="nb"></b></span></div>
+    </div>
+    <div class="q">
+      <div class="src">OZTAS · CETINKAYA · ADEDOYIN · BUDKA · AKSU · DOGAN — Future Generation Computer Systems, 2024</div>
+      <blockquote>…innovative methods such as graph analysis and anomaly detection were suggested to overcome the limitations of rule-based systems.</blockquote>
+      <div class="uz">Tavsiya: anomaliya aniqlash.</div>
+      <div class="rs"><span>Biz: Isolation Forest / autoencoder / PCA → <b data-v="anom_range"></b></span><span>Skorlar feature sifatida → <b data-p="lgb_anom"></b></span></div>
+    </div>
+    <div class="q" style="justify-content:center">
+      <div class="src">XULOSA</div>
+      <blockquote style="font-size:clamp(18px,1.6vw,22px)">DNB va Feedzai retseptlari bizda pastroq: ularda nisbiy tur farqlari yo'q. Anomaliya ≠ eskalatsiya.</blockquote>
+    </div>
+  </div>
+  <div class="hbar"><i id="hb2"></i></div>
+</div></div></div></section>
+
+<section id="tajriba"><div class="wrap">
+  <div class="head"><span class="ch">09</span><h2><span data-v="n_exp"></span> tajriba, bitta reyting</h2>
+    <p class="sub">Bir xil <span data-v="n_folds"></span>-fold CV. Manba: <code>outputs/experiments.csv</code>, <code>outputs/experiments_papers.csv</code>.</p></div>
+  <div class="chips" id="chips">
+    <button class="on" data-f="all">Hammasi</button><button data-f="ours">Bizning yo'l</button><button data-f="paper">Maqolalardan</button>
+    <button data-f="classic">Klassik ML</button><button data-f="unsup">Nazoratsiz</button><button data-f="seq">Ketma-ketlik</button>
+  </div>
+  <div class="lb" id="lb"></div>
+  <div class="cap" style="margin-top:14px">Shkala 0.40 → 0.70. Top-6 bir-biridan <span data-v="lb_spread"></span> ichida.</div>
+  <div class="pipe" style="margin-top:28px">
+    <div class="st"><div class="k">CHIZIQLI vs BOOSTING</div><div class="v" data-v="lr_vs_lgb"></div><div class="d">murakkab o'zaro ta'sir yo'q</div></div>
+    <div class="st"><div class="k">MODEL TANLOVI</div><div class="v" data-v="model_spread"></div><div class="d">featurelar: <span data-v="feature_gain"></span></div></div>
+    <div class="st"><div class="k">GRU VALID AUC</div><div class="v" data-v="gru_auc"></div><div class="d">train loss <span data-v="gru_loss"></span></div></div>
+    <div class="st"><div class="k">SHIFT</div><div class="v" data-v="top_auc"></div><div class="d">label shovqini</div></div>
+  </div>
+</div></section>
+
+<section id="model"><div class="wrap">
+  <div class="head"><span class="ch">10</span><h2>Yakuniy model</h2></div>
+  <div class="pipe">
+    <div class="st"><div class="k">1</div><div class="t">Featurelar</div><div class="d"><span data-v="n_fam"></span> oila, <span data-v="n_features"></span> nomzod, burst'siz</div></div>
+    <div class="st"><div class="k">2</div><div class="t">Tanlash</div><div class="d"><span data-v="n_folds"></span>-fold LightGBM gain → top-<span data-v="n_selected"></span></div></div>
+    <div class="st"><div class="k">3A</div><div class="t">LightGBM</div><div class="d" data-v="lgb_params"></div></div>
+    <div class="st"><div class="k">3B</div><div class="t">Logistik regressiya</div><div class="d">C <span data-v="lr_C"></span> · median-imputer · standartlashtirish</div></div>
+    <div class="st hot"><div class="k">4</div><div class="t">Rank-blend</div><div class="d" data-v="blend_formula"></div><div class="v" data-v="cv_blend"></div></div>
+  </div>
+  <div class="grid2">
+    <div><div class="chart" id="c_roc"></div>
+      <div class="cap">recall@20%FPR = <b data-v="recall20"></b>: 20 % alert tekshirilib, eskalatsiyalarning <span data-v="recall20_pct"></span> i topiladi.</div></div>
+    <div><div class="chart" id="c_cal"></div>
+      <div class="cap">Skor desillari: <span data-v="score_range"></span>, monoton.</div></div>
+  </div>
+</div></section>
+
+<section id="isbot"><div class="wrap">
+  <div class="head"><span class="ch">11</span><h2>Loglar va notebook</h2>
+    <p class="sub">Loglar fayldan so'zma-so'z: <code>outputs/train_log.txt</code>, <code>outputs/exp_papers.log</code>, <code>outputs/gru_training.log</code>.</p></div>
+  <div class="grid2">
+    <div class="term"><div class="bar"><i></i><i></i><i></i><span>outputs/train_log.txt</span></div><pre id="log_train"></pre></div>
+    <div class="term"><div class="bar"><i></i><i></i><i></i><span>outputs/exp_papers.log</span></div><pre id="log_papers"></pre></div>
+  </div>
+  <div class="term" style="margin-top:16px"><div class="bar"><i></i><i></i><i></i><span>outputs/gru_training.log</span></div><pre id="log_gru"></pre></div>
+  <h3><code>notebooks/01_eda.ipynb</code> grafiklari</h3>
+  <div class="shots">
+    <div class="shot"><img src="img/07_relative.png" alt="bank minus naqd desillari" loading="lazy"><div class="c">site/img/07_relative.png</div></div>
+    <div class="shot"><img src="img/08_floor.png" alt="minimal hajm bo'yicha eskalatsiya" loading="lazy"><div class="c">site/img/08_floor.png</div></div>
+    <div class="shot"><img src="img/09_importance.png" alt="feature importance" loading="lazy"><div class="c">site/img/09_importance.png</div></div>
+    <div class="shot"><img src="img/10_roc_calibration.png" alt="ROC va kalibratsiya" loading="lazy"><div class="c">site/img/10_roc_calibration.png</div></div>
+  </div>
+  <div class="tree" id="tree"></div>
+</div></section>
+
+<footer><div class="wrap"><span>OPTIMUS FPG · Fintech track · jamoa ID <span data-v="team"></span></span><span>Ma'lumotlar sintetik.</span></div></footer>
+
+<script>
+(function(){
+const D=window.SITE_DATA;
+if(!D){document.body.insertAdjacentHTML('afterbegin','<p style="padding:90px 24px;font:600 18px system-ui">site/data.js topilmadi. Loyiha ildizida <code>python src/site_data.py</code> ni ishga tushiring.</p>');return;}
+const R=D.run||{}, PE=D.papers_exp||{}, EX=D.experiments||{};
+const C={fire:'#3730c8',fire2:'#5b55e6',gold:'#b8860b',rose:'#d1355f',plum:'#8a5cff',text2:'#1f1f2b',muted:'#454556',line:'#dcdce8',text:'#0b0b12'};
+const ESC=C.fire, DIS='#8b8ea3';
+const nf=v=>v==null?'—':Math.round(v).toLocaleString('fr-FR').replace(/ /g,' ');
+const f3=v=>v==null||isNaN(v)?'—':(+v).toFixed(3);
+const pc=(v,d=1)=>v==null?'—':(+v).toFixed(d)+' %';
+const sg=v=>v==null||isNaN(v)?'—':(v>0?'+':'')+(+v).toFixed(3);
+const mm=a=>[Math.min(...a),Math.max(...a)];
+const rng3=(lo,hi)=>lo==null?'—':(Math.abs(lo-hi)<0.0005?f3(lo):`${f3(lo)}–${f3(hi)}`);
+const dec=D.deciles||{}, ta=D.type_amt_by_class||{}, H=D.hypotheses||[], fam=R.families||{}, lgbp=R.lgb_params||{};
+const ts=D.type_share||{}, ds=D.dir_share||{}, te=D.type_esc_rate||{}, de=D.dir_esc_rate||{};
+const anom=['iforest','autoenc','pca'].filter(k=>PE[k]).map(k=>PE[k].auc);
+const mr=mm(D.monthly.rate), avg=D.pos_rate*100, LBD=D.leaderboard||[];
+const V={
+ team:R.team, n_train:nf(D.n_train), n_test:nf(D.n_test), n_tx_train_full:nf(D.n_tx_train), n_tx_test:nf(D.n_tx_test),
+ n_features:nf(R.n_features), n_selected:R.n_selected, n_folds:R.n_folds, n_exp:LBD.length, n_papers:D.n_papers,
+ n_types:D.n_types, n_dirs:D.n_dirs, window_days:D.window_days, date_min:D.date_min, date_max:D.date_max,
+ amt_min:D.amt_min, amt_max:D.amt_max, tx_mean:nf(D.tx_per_signal.mean), tx_min:nf(D.tx_per_signal.min), tx_max:nf(D.tx_per_signal.max),
+ auc_n:f3(dec.nb_n&&dec.nb_n.auc), best_single:f3(Math.max(...Object.values(dec).map(v=>v.auc))),
+ types_cap:Object.entries(ts).map(([k,v])=>`${k} ${pc(v,1)}`).join(' · ')+` · kirim ${pc(ds.kirim,0)}`,
+ type_esc_range:(()=>{const a=mm(Object.values(te));return `${a[0].toFixed(0)}–${a[1].toFixed(0)} %`})(),
+ pos_pct_s:pc(avg), month_range:`${mr[0].toFixed(0)}–${mr[1].toFixed(0)} %`,
+ n_hyp:H.length, n_hyp_ok:H.filter(h=>h.kind==='hot').length,
+ hist_gain:sg(EX.agg_hist!=null&&EX.agg!=null?EX.agg_hist-EX.agg:null),
+ bank_amt_pair:ta.bank_otkazmasi?`${ta.bank_otkazmasi['0'].toFixed(2)} vs ${ta.bank_otkazmasi['1'].toFixed(2)}`:'—',
+ act_pair:`${D.activity.peak} → ${D.activity.last}`, h2_range:(()=>{const h=H.find(x=>x.id==='H2');return h?rng3(h.lohi[0],h.lohi[1]):'—'})(),
+ heat_dev:D.heat_dev, n_rel:fam.features_relative, top10_rel:D.importance.top10_relative,
+ burst_share:pc(D.burst.share), burst_min:D.burst.minutes, burst_n:D.burst.mean_n,
+ floor_val:D.floor.value, floor_at:pc(D.floor.rate_at,0), floor_above:pc(D.floor.rate_above,0),
+ fam_win:fam.features_windows, fam_hist:fam.features_histograms, fam_rel:fam.features_relative, n_fam:Object.keys(fam).length,
+ cv_all:f3(R.cv_all_features), cv_lgb:f3(R.cv_lgb), cv_blend:f3(R.cv_blend), recall20:f3(D.roc.recall20), recall20_pct:pc(D.roc.recall20*100,0),
+ anom_range:anom.length?`AUC ${mm(anom)[0].toFixed(2)}–${mm(anom)[1].toFixed(2)}`:'—',
+ lb_spread:f3(D.lb_top6_spread), lr_vs_lgb:`${f3(R.cv_lr)} / ${f3(R.cv_lgb)}`, model_spread:'±'+f3(D.model_spread), feature_gain:sg(D.feature_gain),
+ gru_auc:D.gru?`${f3(D.gru.best_auc)} → ${f3(D.gru.last_auc)}`:'—', gru_loss:D.gru?`${D.gru.first_loss.toFixed(2)} → ${D.gru.last_loss.toFixed(2)}`:'—',
+ top_auc:f3(Math.max(...LBD.map(x=>x.auc))),
+ lgb_params:`${R.n_estimators} daraxt · lr ${lgbp.learning_rate} · ${lgbp.num_leaves} barg · min ${lgbp.min_child_samples}/barg · colsample ${lgbp.colsample_bytree} · L2 ${lgbp.reg_lambda} · ${R.n_seeds} seed`,
+ lr_C:R.lr_C, blend_formula:`${R.blend_w_lgb} · rank(A) + ${(1-R.blend_w_lgb).toFixed(1)} · rank(B)`,
+ score_range:`${D.score_deciles[0].toFixed(0)} % → ${D.score_deciles[9].toFixed(0)} %`,
+};
+document.querySelectorAll('[data-v]').forEach(el=>{const v=V[el.dataset.v];el.textContent=(v==null)?'—':v;});
+document.querySelectorAll('[data-p]').forEach(el=>{const r=PE[el.dataset.p];el.textContent=r?'AUC '+f3(r.auc):'—';});
+document.getElementById('gh').href=D.repo;
+
+const words=[`${Math.round(D.n_tx_train/1e6)} million`,'tranzaksiya.','|Bitta|','naqsh.'];const h1=document.getElementById('h1');
+words.forEach((w,i)=>{const fire=w.startsWith('|');w=w.replace(/\|/g,'');const o=document.createElement('span');o.className='w';const s=document.createElement('span');s.textContent=w;s.style.animationDelay=(0.1+i*0.12)+'s';if(fire)s.className='fire';o.appendChild(s);h1.appendChild(o);});
+const CNT={n_tx_train:D.n_tx_train,n_train:D.n_train,pos_pct:avg,cv_blend:R.cv_blend};
+const fmt={M:v=>(v/1e6).toFixed(2)+' M',k:v=>nf(v),pct:v=>v.toFixed(1)+' %',auc:v=>v.toFixed(3)};
+document.querySelectorAll('.cnt').forEach(el=>{const to=+CNT[el.dataset.src],f=fmt[el.dataset.fmt];let t0=null;const step=t=>{if(!t0)t0=t;const p=Math.min(1,(t-t0)/1800);el.textContent=f(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step);};setTimeout(()=>requestAnimationFrame(step),1300);});
+
+document.getElementById('tr1').innerHTML=H.map(h=>{let res,cls='';
+  if(h.delta!=null){res=`${sg(h.delta)} CV`;cls='ok';}
+  else if(h.raw){res=`AUC ${rng3(h.lohi[0],h.lohi[1])} · teskari`;cls='bad';}
+  else {res=`AUC ${rng3(h.lohi[0],h.lohi[1])}`;if(h.kind==='hot')cls='hot';}
+  return `<div class="card"${h.kind==='hot'?' style="border-left:3px solid var(--fire)"':''}><span class="ix">${h.id}</span><h4>${h.title}</h4><p>${h.method}</p><span class="res ${cls}">${res}</span></div>`;}).join('');
+
+const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const hl=s=>esc(s).replace(/(AUC\s*=\s*|AUC=|blend=|LightGBM=|Valid AUC: )([0-9.]+)/g,'$1<span class="hi">$2</span>').replace(/^(\[[0-9:]+\])/gm,'<span class="g">$1</span>').replace(/(wrote .*)$/gm,'<span class="ok">$1</span>');
+document.getElementById('log_train').innerHTML=hl(D.logs.train)||'—';
+document.getElementById('log_papers').innerHTML=hl(D.logs.papers)||'—';
+document.getElementById('log_gru').innerHTML=hl(D.logs.gru)||'—';
+document.getElementById('tree').innerHTML=`<b>fintech_hakaton/</b>
+├── data/                            dataset fayllari
+├── src/train.py                     pipeline → outputs/team_${esc(R.team)}.csv
+├── src/exp_papers.py                adabiyot retseptlari → outputs/experiments_papers.csv
+├── src/site_data.py                 outputs/ → site/data.js
+├── notebooks/01_eda.ipynb           EDA grafiklari → site/img/
+├── notebooks/02_experiments.ipynb   tajribalar → outputs/experiments.csv
+├── notebooks/03_final_model.ipynb   yakuniy model + submission tekshiruvi
+├── outputs/                         submission, loglar, CV hisobotlari
+└── site/                            ushbu sahifa`;
+
+const L=(o)=>{const b={paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{family:'Instrument Sans, system-ui, sans-serif',color:C.text2,size:13},
+  margin:{l:56,r:20,t:48,b:62},xaxis:{gridcolor:C.line,zerolinecolor:C.line,linecolor:C.line,tickfont:{family:'JetBrains Mono, monospace',size:11.5},automargin:true},
+  yaxis:{gridcolor:C.line,zerolinecolor:C.line,linecolor:C.line,tickfont:{family:'JetBrains Mono, monospace',size:11.5},automargin:true},
+  legend:{orientation:'h',x:0.01,y:0.99,xanchor:'left',yanchor:'top',bgcolor:'rgba(255,255,255,.75)',font:{size:12.5}},hoverlabel:{bgcolor:'#ffffff',bordercolor:'#9d9db3',font:{color:C.text,family:'Instrument Sans'}},
+  title:{font:{family:'Bricolage Grotesque, sans-serif',size:16,color:'#0b0b12'},x:0,xanchor:'left'}};
+  for(const k in o){b[k]=(typeof o[k]==='object'&&!Array.isArray(o[k])&&b[k])?Object.assign({},b[k],o[k]):o[k];} return b;};
+const CFG={displayModeBar:false,responsive:true};
+const plot=(id,tr,lay)=>{const el=document.getElementById(id); if(el&&window.Plotly) Plotly.newPlot(el,tr,L(lay||{}),CFG);};
+const TF={family:'JetBrains Mono',color:'#0b0b12',size:11.5};
+const hline=(x0,x1,yv)=>({type:'scatter',mode:'lines',x:[x0,x1],y:[yv,yv],line:{color:C.muted,dash:'dot',width:1},hoverinfo:'skip',showlegend:false});
+
+plot('c_txps',[{type:'bar',x:D.tx_per_signal_hist.x,y:D.tx_per_signal_hist.y,marker:{color:DIS},hovertemplate:'%{x:.0f}+ tranzaksiya: %{y} alert<extra></extra>'}],{title:{text:'Bitta alertga to\'g\'ri keladigan tranzaksiyalar'},xaxis:{title:'tranzaksiyalar soni'},yaxis:{title:'alertlar'},bargap:.1});
+const tsv=[...Object.values(ts),...Object.values(ds)];
+plot('c_types',[{type:'bar',orientation:'h',y:[...Object.keys(ts),...Object.keys(ds)],x:tsv,marker:{color:[...Object.keys(ts).map(()=>DIS),...Object.keys(ds).map(()=>C.fire2)]},text:tsv.map(v=>v.toFixed(1)+' %'),textposition:'outside',textfont:TF,cliponaxis:false,hoverinfo:'skip'}],{title:{text:'Tranzaksiyalar ulushi: tur va yo\'nalish, %'},xaxis:{range:[0,Math.max(...tsv)*1.2]},margin:{l:130,r:50}});
+const ek=[...Object.keys(te),...Object.keys(de)], ev=[...Object.values(te),...Object.values(de)];
+plot('c_type_esc',[{type:'bar',x:ek,y:ev,marker:{color:ESC},text:ev.map(v=>v.toFixed(1)),textposition:'outside',textfont:TF,cliponaxis:false,hoverinfo:'skip'},hline(-.5,ek.length-.5,avg)],{title:{text:'Turga tegishli alertning eskalatsiya darajasi, %'},yaxis:{range:[0,Math.max(...ev)*1.4]},showlegend:false});
+plot('c_month',[{type:'bar',x:D.monthly.labels,y:D.monthly.n,name:'alertlar soni',marker:{color:'rgba(139,142,163,.45)'},yaxis:'y',hovertemplate:'%{x}: %{y} alert<extra></extra>'},
+  {type:'scatter',mode:'lines+markers',x:D.monthly.labels,y:D.monthly.rate,name:'eskalatsiya, %',line:{color:ESC,width:3,shape:'spline'},marker:{size:7,color:ESC},yaxis:'y2',hovertemplate:'%{x}: %{y} %<extra></extra>'},
+  {type:'scatter',mode:'lines',x:D.monthly.labels,y:D.monthly.labels.map(()=>avg),name:`o'rtacha ${avg.toFixed(1)} %`,line:{color:C.muted,dash:'dot',width:1},yaxis:'y2',hoverinfo:'skip'}],
+  {title:{text:'Oylar bo\'yicha alertlar va eskalatsiya darajasi'},yaxis:{title:'alertlar'},yaxis2:{title:'%',overlaying:'y',side:'right',range:[0,mr[1]*1.4],gridcolor:'rgba(0,0,0,0)',tickfont:{family:'JetBrains Mono',size:11.5}},margin:{r:56}});
+const cm=D.class_means, rows=[['Tranzaksiyalar soni','n',v=>v.toFixed(0)],['O\'rtacha miqdor_indeksi','amt',v=>v.toFixed(3)],['Chiqim ulushi','out',v=>(v*100).toFixed(1)+' %'],['Naqd ulushi','naqd',v=>(v*100).toFixed(1)+' %'],['Xalqaro ulushi','xal',v=>(v*100).toFixed(2)+' %']];
+document.getElementById('t_classmeans').innerHTML=rows.map(([l,k,f])=>{const a=cm[k]['0'],b=cm[k]['1'];const d=b-a;return `<tr><td>${l}</td><td class="n">${f(a)}</td><td class="n">${f(b)}</td><td class="n" style="color:${Math.abs(d/(Math.abs(a)+1e-9))>.05?'#3730c8':'#454556'}">${d>0?'+':''}${k==='n'?d.toFixed(0):(k==='amt'?d.toFixed(3):(d*100).toFixed(1)+' pp')}</td></tr>`}).join('');
+plot('c_amount',[{type:'scatter',mode:'lines',x:D.amount_density.x,y:D.amount_density.dismissed,name:'rad etilgan',line:{color:DIS,width:2.5,shape:'spline'},fill:'tozeroy',fillcolor:'rgba(139,142,163,.15)'},
+  {type:'scatter',mode:'lines',x:D.amount_density.x,y:D.amount_density.escalated,name:'eskalatsiya',line:{color:ESC,width:3,shape:'spline'},fill:'tozeroy',fillcolor:'rgba(55,48,200,.12)'}],{title:{text:'miqdor_indeksi zichligi, sinflar bo\'yicha'},xaxis:{title:'miqdor_indeksi'},yaxis:{title:'zichlik'}});
+const tk=Object.keys(ta);
+plot('c_typeamt',[{type:'bar',x:tk,y:tk.map(k=>ta[k]['0']),name:'rad etilgan',marker:{color:DIS}},{type:'bar',x:tk,y:tk.map(k=>ta[k]['1']),name:'eskalatsiya',marker:{color:ESC}}],{title:{text:'O\'rtacha hajm: tur × sinf'},barmode:'group',yaxis:{title:'o\'rtacha miqdor_indeksi'}});
+plot('c_activity',[{type:'scatter',mode:'lines',x:D.activity.x,y:D.activity.y,line:{color:C.fire2,width:3},fill:'tozeroy',fillcolor:'rgba(55,48,200,.10)',hovertemplate:'%{x} kun oldin: %{y:.2f} / kun<extra></extra>'}],{title:{text:'O\'rtacha kunlik faollik signalgacha'},xaxis:{title:'signalgacha kunlar',autorange:'reversed'},yaxis:{title:'tranzaksiya / alert / kun',rangemode:'tozero'},showlegend:false});
+plot('c_heat',[{type:'heatmap',z:D.hour_dow_ratio,x:[...Array(24).keys()],y:['Du','Se','Ch','Pa','Ju','Sh','Ya'],zmin:1-2*D.heat_dev,zmax:1+2*D.heat_dev,colorscale:[[0,'#8a8ca0'],[.5,'#f5f5f9'],[1,ESC]],colorbar:{thickness:10,len:.8,tickfont:{family:'JetBrains Mono',size:10,color:C.muted}},hovertemplate:'%{y} %{x}:00 — nisbat %{z:.2f}<extra></extra>'}],{title:{text:'Eskalatsiya / rad etilgan nisbati, hafta kuni × soat'},xaxis:{title:'soat',dtick:2},margin:{l:44}});
+const steps2=[...document.querySelectorAll('#steps2 .step')];
+const so2=new IntersectionObserver(en=>{en.forEach(x=>{if(x.isIntersecting){steps2.forEach(s=>s.classList.toggle('on',s===x.target));document.querySelectorAll('#stack2 .chart').forEach(c=>c.classList.toggle('on',c.id===x.target.dataset.c));}});},{rootMargin:'-40% 0px -40% 0px',threshold:0});
+steps2.forEach(s=>so2.observe(s));
+
+document.querySelectorAll('#steps .step').forEach(s=>{const v=dec[s.dataset.f];if(!v)return;s.querySelector('[data-a]').textContent='AUC '+f3(v.auc);
+  const t=s.querySelector('[data-t]');if(!t)return;const a=v.rate[0],b=v.rate[9],sp=Math.max(...v.rate)-Math.min(...v.rate);
+  t.innerHTML=t.dataset.t==='first_last'?`D1 → <b>${a.toFixed(1)} %</b>. D10 → <b>${b.toFixed(1)} %</b>.${a>b&&a/b>=2?` ${(a/b).toFixed(1)} barobar.`:''}`:`Desillar farqi ${sp.toFixed(1)} pp: signal yo'q.`;});
+const sel=document.getElementById('sel_feat');Object.entries(dec).forEach(([k,v])=>{const o=document.createElement('option');o.value=k;o.textContent=v.label;sel.appendChild(o);});
+const decMax=Math.max(...Object.values(dec).flatMap(d=>d.rate))*1.2;let curF=null;
+function drawDec(k){if(k===curF||!dec[k])return;curF=k;const v=dec[k];sel.value=k;
+  const cols=v.rate.map(r=>r>avg*1.15?ESC:(r<avg*.85?DIS:'#d3d3de'));
+  const el=document.getElementById('c_decile');const data=[{type:'bar',x:v.rate.map((_,i)=>`D${i+1}`),y:v.rate,marker:{color:cols},text:v.rate.map(r=>r.toFixed(1)),textposition:'outside',textfont:TF,cliponaxis:false,customdata:v.edges.slice(0,10).map((e,i)=>`${e} … ${v.edges[i+1]}`),hovertemplate:'%{x}: %{y} % eskalatsiya<br>oraliq %{customdata}<extra></extra>'},hline('D1','D10',avg)];
+  const lay=L({title:{text:v.label+' · AUC '+f3(v.auc)},xaxis:{title:'desil (D1 = eng kichik qiymatlar)'},yaxis:{title:'eskalatsiya, %',range:[0,decMax]},showlegend:false,transition:{duration:500,easing:'cubic-in-out'},margin:{b:72}});
+  if(el.data)Plotly.react(el,data,lay,CFG);else Plotly.newPlot(el,data,lay,CFG);
+  const sp=Math.max(...v.rate)-Math.min(...v.rate);document.getElementById('cap_decile').innerHTML=sp>8?`<b>Kuchli signal.</b> Desillar farqi ${sp.toFixed(1)} pp.`:(sp>3?`<b>Zaif signal.</b> Farq ${sp.toFixed(1)} pp.`:`<b>Signal yo'q.</b> Farq ${sp.toFixed(1)} pp.`);}
+sel.addEventListener('change',()=>drawDec(sel.value));
+const steps=[...document.querySelectorAll('#steps .step')];
+const so=new IntersectionObserver(en=>{en.forEach(x=>{if(x.isIntersecting){steps.forEach(s=>s.classList.toggle('on',s===x.target));drawDec(x.target.dataset.f);}});},{rootMargin:'-40% 0px -40% 0px',threshold:0});
+steps.forEach(s=>so.observe(s));drawDec(steps[0].dataset.f);
+
+plot('c_burst',[{type:'bar',x:D.burst_hist.x,y:D.burst_hist.y,marker:{color:ESC},hovertemplate:'%{x:.1f} daqiqa oldin: %{y}<extra></extra>'}],{title:{text:'Signaldan oldingi oxirgi 10 daqiqa'},xaxis:{title:'signalgacha daqiqalar'},yaxis:{title:'tranzaksiyalar'},bargap:.06});
+const gf=D.group_floors;
+plot('c_floor',[{type:'bar',orientation:'h',y:gf.map(g=>g.grp),x:gf.map(g=>g.min),marker:{color:DIS},name:'pastki chegara',text:gf.map(g=>g.min.toFixed(2)),textposition:'outside',textfont:TF,cliponaxis:false},
+  {type:'bar',orientation:'h',y:gf.map(g=>g.grp),x:gf.map(g=>g.max),marker:{color:ESC},name:'yuqori chegara',text:gf.map(g=>g.max.toFixed(2)),textposition:'outside',textfont:TF,cliponaxis:false}],{title:{text:'miqdor_indeksi chegaralari: tur × yo\'nalish'},barmode:'overlay',xaxis:{range:[D.amt_min*1.35,D.amt_max*1.3]},margin:{l:160,r:40}});
+const im=D.importance;
+plot('c_imp',[{type:'bar',orientation:'h',y:im.names.slice().reverse(),x:im.share.slice().reverse(),marker:{color:im.names.slice().reverse().map(n=>n.includes('minus')||n.includes('_dev')?ESC:(n.includes('min')?C.plum:DIS))},text:im.share.slice().reverse().map(v=>v.toFixed(1)+' %'),textposition:'outside',textfont:{family:'JetBrains Mono',size:11,color:'#0b0b12'},cliponaxis:false,hovertemplate:'%{y}<br>gain ulushi %{x:.2f} %<extra></extra>'}],{title:{text:`Top-20 feature (${im.n_total} nomzoddan), gain ulushi`},margin:{l:340,r:64},xaxis:{title:'%'},yaxis:{tickfont:{family:'JetBrains Mono',size:10.5}}});
+
+const CC={ours:C.fire,paper:C.rose,classic:'#8a8ca0',unsup:C.gold,seq:'#c0392b'};
+const CN={ours:'bizning yo\'l',paper:'maqoladan',classic:'klassik ML',unsup:'nazoratsiz',seq:'ketma-ketlik'};
+const lb=document.getElementById('lb');
+function drawLB(f){const rows=LBD.filter(r=>f==='all'||r.cat===f).sort((a,b)=>b.auc-a.auc);const top=Math.max(...rows.map(r=>r.auc));
+  lb.innerHTML=rows.map((r,i)=>`<div class="row${r.auc===top?' top':''}" style="animation-delay:${i*40}ms"><div class="name"><div class="t"><span>${r.name}</span><span class="cat" style="color:${CC[r.cat]}">${CN[r.cat]}</span></div>${r.note?`<div class="s">${r.note}</div>`:''}<div class="bar"><u></u><i data-w="${Math.max(0,(r.auc-0.4)/0.3*100).toFixed(1)}" style="background:${CC[r.cat]}"></i></div></div><div class="v">${f3(r.auc)}</div></div>`).join('');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>lb.querySelectorAll('.bar i').forEach(b=>b.style.width=b.dataset.w+'%')));}
+document.querySelectorAll('#chips button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#chips button').forEach(x=>x.classList.remove('on'));b.classList.add('on');drawLB(b.dataset.f);}));drawLB('all');
+
+plot('c_roc',[{type:'scatter',mode:'lines',x:D.roc.fpr,y:D.roc.tpr,name:`blend · AUC ${f3(D.roc.auc)}`,line:{color:ESC,width:3.5},fill:'tozeroy',fillcolor:'rgba(55,48,200,.10)'},
+  {type:'scatter',mode:'lines',x:[0,1],y:[0,1],name:'tasodifiy',line:{color:C.muted,dash:'dot',width:1}},
+  {type:'scatter',mode:'markers+text',x:[.2],y:[D.roc.recall20],text:[`recall@20%FPR = ${f3(D.roc.recall20)}`],textposition:'bottom right',textfont:{family:'JetBrains Mono',size:11.5,color:'#0b0b12'},marker:{color:C.gold,size:11,line:{color:'#ffffff',width:2}},showlegend:false,hoverinfo:'skip'}],
+  {title:{text:'Out-of-fold ROC'},xaxis:{title:'FPR',range:[0,1]},yaxis:{title:'TPR (recall)',range:[0,1]}});
+const sd=D.score_deciles;
+plot('c_cal',[{type:'bar',x:sd.map((_,i)=>`D${i+1}`),y:sd,marker:{color:sd.map((v,i)=>`rgba(55,48,200,${.25+.75*i/9})`)},text:sd.map(v=>v.toFixed(0)+' %'),textposition:'outside',textfont:TF,cliponaxis:false,hovertemplate:'%{x}: %{y} %<extra></extra>'},hline('D1','D10',avg)],{title:{text:'Skor desillari → haqiqiy eskalatsiya, %'},xaxis:{title:'skor desili'},yaxis:{range:[0,Math.max(...sd)*1.25]},showlegend:false});
+
+(function(){const cv=document.getElementById('bg');if(!cv)return;const ctx=cv.getContext('2d');let W,Hh,pts=[];const rs=()=>{W=cv.width=cv.offsetWidth*devicePixelRatio;Hh=cv.height=cv.offsetHeight*devicePixelRatio;};rs();window.addEventListener('resize',rs);
+const N=Math.min(220,Math.floor(window.innerWidth/6));for(let i=0;i<N;i++)pts.push({x:Math.random(),y:Math.random(),s:.0005+Math.random()*.002,r:Math.random()<D.pos_rate,a:.25+Math.random()*.6,sz:.8+Math.random()*1.6});
+const red=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function frame(){ctx.clearRect(0,0,W,Hh);const sx=W*.72;const g=ctx.createLinearGradient(sx,0,sx,Hh);g.addColorStop(0,'rgba(55,48,200,0)');g.addColorStop(.5,'rgba(55,48,200,.6)');g.addColorStop(1,'rgba(55,48,200,0)');ctx.strokeStyle=g;ctx.lineWidth=1.2*devicePixelRatio;ctx.beginPath();ctx.moveTo(sx,0);ctx.lineTo(sx,Hh);ctx.stroke();
+  for(const p of pts){if(!red){p.x+=p.s;if(p.x*W>sx){p.x=-.02;p.y=Math.random();}}const x=p.x*W,y=p.y*Hh;const d=1-Math.min(1,Math.abs(sx-x)/(W*.4));ctx.fillStyle=p.r?`rgba(55,48,200,${p.a*(.5+.5*d)})`:`rgba(90,90,110,${p.a*(.15+.35*d)})`;ctx.beginPath();ctx.arc(x,y,(p.r?2.4:p.sz)*devicePixelRatio,0,7);ctx.fill();}
+  if(!red)requestAnimationFrame(frame);}frame();})();
+function hscroll(wrapId,trackId,barId){const wrap=document.getElementById(wrapId),track=document.getElementById(trackId),bar=document.getElementById(barId);if(!wrap||!track)return;
+  const dist=()=>Math.max(track.scrollWidth-Math.min(window.innerWidth,1240)+90,0);
+  function size(){if(window.innerWidth<=960){wrap.style.height='';return;}wrap.style.height=(window.innerHeight+dist()*1.15)+'px';}
+  function upd(){if(window.innerWidth<=960)return;const r=wrap.getBoundingClientRect();const total=wrap.offsetHeight-window.innerHeight;const p=Math.min(1,Math.max(0,-r.top/Math.max(total,1)));track.style.transform=`translateX(${-p*dist()}px)`;if(bar)bar.style.width=(p*100)+'%';}
+  size();upd();window.addEventListener('resize',()=>{size();upd();});window.addEventListener('scroll',upd,{passive:true});}
+hscroll('hw1','tr1','hb1');hscroll('hw2','tr2','hb2');
+const nav=document.getElementById('nav'),prog=document.getElementById('prog'),links=[...document.querySelectorAll('#links a')],secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+function onScroll(){const h=document.documentElement;prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';nav.classList.toggle('solid',window.scrollY>40);const y=window.scrollY+160;let cur=-1;secs.forEach((s,i)=>{if(s&&s.offsetTop<=y)cur=i;});links.forEach((a,i)=>a.classList.toggle('on',i===cur));}
+window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+if('IntersectionObserver' in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const els=[...document.querySelectorAll('section .grid3 .card, section .grid2 > div, section .pipe .st, section .head:not(.hhead), section .call, section .tbl, section .term, section .shot, section .tree')];els.forEach(e=>{if(e.getBoundingClientRect().top>window.innerHeight)e.classList.add('rv','pre');});const io=new IntersectionObserver(en=>en.forEach((x,i)=>{if(x.isIntersecting){setTimeout(()=>x.target.classList.remove('pre'),(i%4)*90);io.unobserve(x.target);}}),{rootMargin:'0px 0px -6% 0px'});els.forEach(e=>io.observe(e));}
+})();
+</script>
+</body>
+</html>

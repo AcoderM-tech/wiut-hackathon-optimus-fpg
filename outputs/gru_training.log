@@ -1,0 +1,125 @@
+$ python src/train_gru.py --epochs 100 --hidden 64 --layers 2
+Qurilma: cuda (NVIDIA GeForce RTX 5060 Ti)
+Tranzaksiyalar: 6 987 663 → burst'siz 6 435 033
+Signallar: 13900 · train 11122 / valid 2778 · ketma-ketlik uzunligi 1…2155 (mediana 426)
+Ma'lumot tayyor: 8s
+Model: bi-GRU(hidden=64  layers=2) + masked attention · 107 218 parametr
+O'qitish boshlandi (100 epoch)
+
+Epoch 1/100 yakunlandi | Train Loss: 1.1487 | Valid AUC: 0.5412 | 4s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.5412)
+Epoch 2/100 yakunlandi | Train Loss: 1.1469 | Valid AUC: 0.5512 | 4s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.5512)
+Epoch 3/100 yakunlandi | Train Loss: 1.1442 | Valid AUC: 0.5691 | 3s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.5691)
+Epoch 4/100 yakunlandi | Train Loss: 1.1422 | Valid AUC: 0.5654 | 4s
+Epoch 5/100 yakunlandi | Train Loss: 1.1376 | Valid AUC: 0.5736 | 4s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.5736)
+Epoch 6/100 yakunlandi | Train Loss: 1.1391 | Valid AUC: 0.5763 | 4s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.5763)
+Epoch 7/100 yakunlandi | Train Loss: 1.1361 | Valid AUC: 0.5784 | 4s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.5784)
+Epoch 8/100 yakunlandi | Train Loss: 1.1350 | Valid AUC: 0.5779 | 3s
+Epoch 9/100 yakunlandi | Train Loss: 1.1322 | Valid AUC: 0.5826 | 4s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.5826)
+Epoch 10/100 yakunlandi | Train Loss: 1.1316 | Valid AUC: 0.5856 | 3s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.5856)
+Epoch 11/100 yakunlandi | Train Loss: 1.1319 | Valid AUC: 0.5853 | 3s
+Epoch 12/100 yakunlandi | Train Loss: 1.1323 | Valid AUC: 0.5868 | 4s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.5868)
+Epoch 13/100 yakunlandi | Train Loss: 1.1304 | Valid AUC: 0.5902 | 3s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.5902)
+Epoch 14/100 yakunlandi | Train Loss: 1.1285 | Valid AUC: 0.5960 | 3s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.5960)
+Epoch 15/100 yakunlandi | Train Loss: 1.1260 | Valid AUC: 0.5924 | 3s
+Epoch 16/100 yakunlandi | Train Loss: 1.1298 | Valid AUC: 0.6041 | 3s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.6041)
+Epoch 17/100 yakunlandi | Train Loss: 1.1213 | Valid AUC: 0.6180 | 3s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.6180)
+Epoch 18/100 yakunlandi | Train Loss: 1.1168 | Valid AUC: 0.6144 | 3s
+Epoch 19/100 yakunlandi | Train Loss: 1.1149 | Valid AUC: 0.6264 | 3s
+   Yangi eng yaxshi natija, model saqlandi (AUC: 0.6264)
+Epoch 20/100 yakunlandi | Train Loss: 1.1063 | Valid AUC: 0.6236 | 3s
+Epoch 21/100 yakunlandi | Train Loss: 1.1036 | Valid AUC: 0.6235 | 3s
+Epoch 22/100 yakunlandi | Train Loss: 1.0990 | Valid AUC: 0.6226 | 3s
+Epoch 23/100 yakunlandi | Train Loss: 1.0915 | Valid AUC: 0.6183 | 3s
+Epoch 24/100 yakunlandi | Train Loss: 1.0956 | Valid AUC: 0.6205 | 3s
+Epoch 25/100 yakunlandi | Train Loss: 1.0877 | Valid AUC: 0.6119 | 3s
+Epoch 26/100 yakunlandi | Train Loss: 1.0800 | Valid AUC: 0.6192 | 3s
+Epoch 27/100 yakunlandi | Train Loss: 1.0679 | Valid AUC: 0.6131 | 3s
+Epoch 28/100 yakunlandi | Train Loss: 1.0700 | Valid AUC: 0.6149 | 3s
+Epoch 29/100 yakunlandi | Train Loss: 1.0699 | Valid AUC: 0.6121 | 3s
+Epoch 30/100 yakunlandi | Train Loss: 1.0432 | Valid AUC: 0.6099 | 4s
+Epoch 31/100 yakunlandi | Train Loss: 1.0387 | Valid AUC: 0.6012 | 3s
+Epoch 32/100 yakunlandi | Train Loss: 1.0272 | Valid AUC: 0.5991 | 3s
+Epoch 33/100 yakunlandi | Train Loss: 1.0134 | Valid AUC: 0.5918 | 3s
+Epoch 34/100 yakunlandi | Train Loss: 1.0136 | Valid AUC: 0.5999 | 3s
+Epoch 35/100 yakunlandi | Train Loss: 0.9871 | Valid AUC: 0.5935 | 4s
+Epoch 36/100 yakunlandi | Train Loss: 0.9655 | Valid AUC: 0.6017 | 3s
+Epoch 37/100 yakunlandi | Train Loss: 0.9621 | Valid AUC: 0.5948 | 3s
+Epoch 38/100 yakunlandi | Train Loss: 0.9371 | Valid AUC: 0.5872 | 3s
+Epoch 39/100 yakunlandi | Train Loss: 0.9137 | Valid AUC: 0.5937 | 3s
+Epoch 40/100 yakunlandi | Train Loss: 0.9111 | Valid AUC: 0.5885 | 4s
+Epoch 41/100 yakunlandi | Train Loss: 0.8796 | Valid AUC: 0.5912 | 3s
+Epoch 42/100 yakunlandi | Train Loss: 0.8679 | Valid AUC: 0.5860 | 3s
+Epoch 43/100 yakunlandi | Train Loss: 0.8409 | Valid AUC: 0.5837 | 3s
+Epoch 44/100 yakunlandi | Train Loss: 0.8341 | Valid AUC: 0.5897 | 3s
+Epoch 45/100 yakunlandi | Train Loss: 0.8150 | Valid AUC: 0.5904 | 4s
+Epoch 46/100 yakunlandi | Train Loss: 0.7709 | Valid AUC: 0.5803 | 4s
+Epoch 47/100 yakunlandi | Train Loss: 0.7628 | Valid AUC: 0.5906 | 4s
+Epoch 48/100 yakunlandi | Train Loss: 0.7509 | Valid AUC: 0.5841 | 3s
+Epoch 49/100 yakunlandi | Train Loss: 0.7396 | Valid AUC: 0.5796 | 3s
+Epoch 50/100 yakunlandi | Train Loss: 0.7238 | Valid AUC: 0.5854 | 4s
+Epoch 51/100 yakunlandi | Train Loss: 0.6931 | Valid AUC: 0.5820 | 4s
+Epoch 52/100 yakunlandi | Train Loss: 0.6699 | Valid AUC: 0.5810 | 3s
+Epoch 53/100 yakunlandi | Train Loss: 0.6582 | Valid AUC: 0.5889 | 4s
+Epoch 54/100 yakunlandi | Train Loss: 0.6555 | Valid AUC: 0.5846 | 3s
+Epoch 55/100 yakunlandi | Train Loss: 0.6138 | Valid AUC: 0.5832 | 4s
+Epoch 56/100 yakunlandi | Train Loss: 0.6092 | Valid AUC: 0.5840 | 3s
+Epoch 57/100 yakunlandi | Train Loss: 0.5931 | Valid AUC: 0.5881 | 4s
+Epoch 58/100 yakunlandi | Train Loss: 0.5640 | Valid AUC: 0.5791 | 4s
+Epoch 59/100 yakunlandi | Train Loss: 0.5492 | Valid AUC: 0.5843 | 4s
+Epoch 60/100 yakunlandi | Train Loss: 0.5249 | Valid AUC: 0.5857 | 3s
+Epoch 61/100 yakunlandi | Train Loss: 0.5098 | Valid AUC: 0.5858 | 3s
+Epoch 62/100 yakunlandi | Train Loss: 0.4810 | Valid AUC: 0.5842 | 3s
+Epoch 63/100 yakunlandi | Train Loss: 0.4865 | Valid AUC: 0.5789 | 4s
+Epoch 64/100 yakunlandi | Train Loss: 0.4882 | Valid AUC: 0.5873 | 3s
+Epoch 65/100 yakunlandi | Train Loss: 0.4790 | Valid AUC: 0.5826 | 3s
+Epoch 66/100 yakunlandi | Train Loss: 0.4549 | Valid AUC: 0.5854 | 3s
+Epoch 67/100 yakunlandi | Train Loss: 0.4361 | Valid AUC: 0.5776 | 3s
+Epoch 68/100 yakunlandi | Train Loss: 0.4299 | Valid AUC: 0.5864 | 4s
+Epoch 69/100 yakunlandi | Train Loss: 0.4095 | Valid AUC: 0.5798 | 3s
+Epoch 70/100 yakunlandi | Train Loss: 0.3942 | Valid AUC: 0.5800 | 3s
+Epoch 71/100 yakunlandi | Train Loss: 0.3964 | Valid AUC: 0.5810 | 3s
+Epoch 72/100 yakunlandi | Train Loss: 0.3708 | Valid AUC: 0.5865 | 3s
+Epoch 73/100 yakunlandi | Train Loss: 0.3664 | Valid AUC: 0.5681 | 4s
+Epoch 74/100 yakunlandi | Train Loss: 0.3457 | Valid AUC: 0.5770 | 3s
+Epoch 75/100 yakunlandi | Train Loss: 0.3224 | Valid AUC: 0.5820 | 4s
+Epoch 76/100 yakunlandi | Train Loss: 0.3261 | Valid AUC: 0.5782 | 3s
+Epoch 77/100 yakunlandi | Train Loss: 0.2987 | Valid AUC: 0.5803 | 4s
+Epoch 78/100 yakunlandi | Train Loss: 0.3077 | Valid AUC: 0.5890 | 3s
+Epoch 79/100 yakunlandi | Train Loss: 0.3055 | Valid AUC: 0.5749 | 3s
+Epoch 80/100 yakunlandi | Train Loss: 0.2929 | Valid AUC: 0.5781 | 3s
+Epoch 81/100 yakunlandi | Train Loss: 0.2741 | Valid AUC: 0.5811 | 3s
+Epoch 82/100 yakunlandi | Train Loss: 0.2594 | Valid AUC: 0.5779 | 3s
+Epoch 83/100 yakunlandi | Train Loss: 0.2774 | Valid AUC: 0.5779 | 3s
+Epoch 84/100 yakunlandi | Train Loss: 0.2634 | Valid AUC: 0.5788 | 3s
+Epoch 85/100 yakunlandi | Train Loss: 0.2450 | Valid AUC: 0.5837 | 4s
+Epoch 86/100 yakunlandi | Train Loss: 0.2551 | Valid AUC: 0.5766 | 3s
+Epoch 87/100 yakunlandi | Train Loss: 0.2175 | Valid AUC: 0.5865 | 3s
+Epoch 88/100 yakunlandi | Train Loss: 0.2082 | Valid AUC: 0.5825 | 3s
+Epoch 89/100 yakunlandi | Train Loss: 0.2162 | Valid AUC: 0.5807 | 3s
+Epoch 90/100 yakunlandi | Train Loss: 0.2231 | Valid AUC: 0.5812 | 3s
+Epoch 91/100 yakunlandi | Train Loss: 0.1989 | Valid AUC: 0.5836 | 3s
+Epoch 92/100 yakunlandi | Train Loss: 0.1839 | Valid AUC: 0.5783 | 3s
+Epoch 93/100 yakunlandi | Train Loss: 0.2074 | Valid AUC: 0.5807 | 4s
+Epoch 94/100 yakunlandi | Train Loss: 0.1884 | Valid AUC: 0.5874 | 3s
+Epoch 95/100 yakunlandi | Train Loss: 0.1743 | Valid AUC: 0.5846 | 3s
+Epoch 96/100 yakunlandi | Train Loss: 0.1707 | Valid AUC: 0.5868 | 3s
+Epoch 97/100 yakunlandi | Train Loss: 0.1602 | Valid AUC: 0.5893 | 3s
+Epoch 98/100 yakunlandi | Train Loss: 0.1732 | Valid AUC: 0.5852 | 3s
+Epoch 99/100 yakunlandi | Train Loss: 0.1484 | Valid AUC: 0.5850 | 3s
+Epoch 100/100 yakunlandi | Train Loss: 0.1572 | Valid AUC: 0.5858 | 3s
+
+O'qitish tugadi! Eng yaxshi AUC: 0.6264 (19-epoch) · 353s
+Log: outputs/gru_training.log · eng yaxshi model: outputs/gru_best.pt
